@@ -10,7 +10,7 @@ Ovaj projekt sam započeo u sklopu izrade završnog rada u srednjoj školi, no o
 Ovaj rad prikazat će detaljan opis postavljanja Active Directory sustava, što uključuje konfiguraciju računala, korisnika, grupa i drugih elemenata. Prilikom konfiguracije sustava, neke značajke bit će namjerno neispravno konfigurirane kako bi lakše i realističnije mogli simulirati stvarni sustav i sigurnosne propuste koji se često događaju korisnicima. Nakon uspostave Active Directory okruženja, rad će se baviti testiranjem njegove sigurnosti. To uključuje eksploataciju tvorničkih postavki, korisničkih postavki i loših sigurnosnih navika
 
 ## Postavljanje okruženja
----
+
 ### Potrebne aplikacije i datoteke
 
 - [VMWare Workstation Player ](https://www.vmware.com/products/desktop-hypervisor/workstation-and-fusion)
@@ -170,9 +170,6 @@ Kako bismo dodatno naglasili važnost ispravne konfiguracije korisnika, postavit
 
 ![image](https://github.com/user-attachments/assets/b1afaf4e-bc05-4235-b873-11ae235a880c)
 
-
-
-
 ## Sigurnosna analiza sustava
 
 ### Konfiguracija napadačkog računala
@@ -188,7 +185,6 @@ Kako bi se mogle izvesti tehnike prikazane u sljedećim poglavljima, potrebno je
 
 Prva faza svake sigurnosne analize sustava sastoji se od pasivnog i aktivnog prikupljanja podatka. Pasivno prikupljanje uključuje analizu javno dostupnih podataka poput imena zaposlenika, fizičke lokacije, korištenih tehnologija, analiza web stranice i tako dalje. U ovom primjeru, zbog same virtualne konfiguracije, ne postoji način na koji bi se mogli pasivno prikupiti podaci o mreži. Upravo zbog toga, analiza mreže započinje aktivnim prikupljanjem podataka. To uključuje otkrivanje IP adresa računala, skeniranje portova, te identifikacija potencijalnih ranjivosti. Mreža je konfigurirana tako da su sva računala, uključujući napadačko, u jednoj virtualnoj NAT mreži. 
 
----
 Nadalje, kako bismo mogli započeti, potrebne su nam same adrese računala. Njih je jednostavno otkriti uz pomoć tvornički preuzetih alata u samom Kali Linux sustavu. Jedan od njih je _netdiscover_. Naime, on funkcionira tako što u mrežu pošalje ARP zahtjeve kako bi identificirao aktivna računala. Alat je potrebno pokrenuti uz administratorske (engl. root) privilegije (_sudo_ naredba) te uz „-r“ opciju navesti adresu mreže i CIDR notaciju. CIDR notacija je skup IP standarda koji služe kako bi IP adresi mreže lakše označili bitove podmreža.
 
 ![image](https://github.com/user-attachments/assets/df4faa5e-deb3-47c5-94f1-ceb6ddcdc319)
@@ -199,7 +195,6 @@ Alat će ispisati sva aktivna računala u mreži, no procesom eliminacije možem
 
 Naime, rezervirane adrese su one koje završavaju s brojem 1 (engl. _Default gateway_) ili 254 (Adresa usmjernika). Adresa koja završava s brojem 2 je adresa računala koje pokreće sam VMware program te automatski dijeli svoju mrežu zbog NAT konfiguracije. To ostavlja adrese koje završavaju s brojevima 133, 134, 135. 
 
----
 Kada smo identificirali aktivna računala u mreži potrebno ih je dodatno enumerirati kako bismo otkrili koja od njih su korisnička, a koja upravitelj domene. Najpoznatiji alat za skeniranje portova je _nmap_.
 Kako bismo skenirali individualnu IP adresu, potrebno je naredbi nmap dodati IP adresu računala. U ovom primjeru, koriste se dodatne opciju poput „-sC“, „-sV“ i „-Pn“. One zajedno redom omogućavaju alatu da pokrene osnovne ugrađene skripte, provjeri verzije usluga na računalima, te onemogući dodatno provjeravanje aktivnosti računala. 
 
@@ -246,7 +241,6 @@ Potpuno zaustavljanje ovog napada vrlo je jednostavno. Naime, preporučeno je iz
 
 Ukoliko napadač želi saznati koja je zaporka sakrivena iza _hash_ vrijednosti dobivene prilikom SMB Relay napada, koristit će alat za probijanje zaporka kao što su _john_ ili _hashcat_. U ovom primjeru koristit će se alat _hashcat_. Međutim, važno je napomenuti kako virtualna računala nemaju dovoljno grafičke ili procesorske snage kako bi probila zadane vrijednosti. **Zbog toga, alat je potrebno preuzeti i koristiti na vlastitom računalu**. 
 
----
 Kako bi se probila _hash_ vrijednost, potrebno je identificirati o kojoj se vrsti _hash_-a radi. U ovom slučaju, zato što je vrijednost prikupljena pomoću SMB Relay napada, znamo kako je NTLM tipa. Zbog toga, pomoću _powershell_ programa, potrebno je pokrenuti _hashcat_ alat uz „-m 1000“ oznaku koja, prema službenoj _hashcat_ dokumentaciji, označava NTLM _hash_. Osim toga, prvo je potrebno specificirati datoteku u kojoj se nalazi _hash_ vrijednost (ntlm.txt), a zatim rječnik mogućih zaporka ispisanih u obliku čistog teksta (rockyou.txt). U ovom slučaju, datoteka rockyou.txt jedan je od gotovih rječnika koji dolaze tvornički instalirani sa sustavom Kali Linux. 
 U stvarnom slučaju, rječnik možemo stvoriti na temelju informacija prikupljenih u prvoj fazi analize sustava ili preuzeti dodatne gotove rječnike poput SecLists github direktorija. Rječnici se često temelje na osobnim podacima zaposlenika, godišnjim dobima, godinama, nasumičnim kombinacijama znakova, i tako dalje.
 
